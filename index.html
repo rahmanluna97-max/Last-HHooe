@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMO ❤️ DEEP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0b0204;
+            font-family: 'Cormorant Garamond', serif;
+            color: #fceabb;
+        }
+
+        /* Background Scene with Moon and Water Texture matching the image */
+        .bg-scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 80% 25%, rgba(130, 30, 45, 0.4) 0%, transparent 40%),
+                radial-gradient(circle at 20% 70%, rgba(50, 8, 15, 0.8) 0%, transparent 60%),
+                linear-gradient(180deg, #150308 0%, #1f050b 45%, #080103 100%);
+            z-index: 1;
+        }
+
+        /* Full Moon */
+        .moon {
+            position: absolute;
+            top: 15%;
+            right: 18%;
+            width: 90px;
+            height: 90px;
+            background: radial-gradient(circle, #fff7d6 0%, #ffd778 40%, #c68a33 80%, #945717 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(255, 215, 120, 0.4), 0 0 100px rgba(180, 50, 70, 0.2);
+            z-index: 2;
+        }
+
+        /* Glowing Stars / Sparkles */
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+            z-index: 2;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Floating Cherry Blossoms / Petals */
+        .floating-petal {
+            position: absolute;
+            background: linear-gradient(135deg, #ff758f, #800f2f);
+            border-radius: 150% 0 150% 0;
+            opacity: 0.7;
+            animation: fallPetal linear infinite;
+            z-index: 3;
+            pointer-events: none;
+        }
+        @keyframes fallPetal {
+            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(110vh) translateX(100px) rotate(360deg); opacity: 0; }
+        }
+
+        /* ================= PASSWORD LOCK SCREEN ================= */
+        #lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            background: rgba(11, 2, 4, 0.85);
+            backdrop-filter: blur(8px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        #lock-screen.hidden {
+            opacity: 0;
+            transform: scale(1.05);
+            pointer-events: none;
+        }
+
+        .lock-card {
+            position: relative;
+            width: 90%;
+            max-width: 620px;
+            padding: 50px 40px;
+            background: rgba(22, 4, 9, 0.75);
+            border: 1.5px solid rgba(220, 160, 90, 0.5);
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(212, 175, 55, 0.08);
+            text-align: center;
+        }
+
+        /* Ornamental frame corners matching the design */
+        .lock-card::before, .lock-card::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-color: #dca05a;
+            border-style: solid;
+        }
+        .lock-card::before { top: 12px; left: 12px; border-width: 2px 0 0 2px; }
+        .lock-card::after { top: 12px; right: 12px; border-width: 2px 2px 0 0; }
+
+        .card-bottom-corners::before, .card-bottom-corners::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-color: #dca05a;
+            border-style: solid;
+        }
+        .card-bottom-corners::before { bottom: 12px; left: 12px; border-width: 0 0 2px 2px; }
+        .card-bottom-corners::after { bottom: 12px; right: 12px; border-width: 0 2px 2px 0; }
+
+        .top-lotus-icon {
+            font-size: 1.8rem;
+            color: #dca05a;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 0 8px rgba(220, 160, 90, 0.6));
+        }
+
+        .lock-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem;
+            letter-spacing: 4px;
+            background: linear-gradient(to right, #fceabb, #dca05a, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .lock-subtitle {
+            font-size: 1.15rem;
+            color: #dfb6c2;
+            font-style: italic;
+            margin-bottom: 30px;
+            letter-spacing: 0.5px;
+        }
+
+        .password-box-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+            margin: 0 auto 25px;
+        }
+
+        .lock-input {
+            width: 100%;
+            padding: 14px 20px 14px 45px;
+            background: rgba(10, 1, 4, 0.9);
+            border: 1px solid rgba(220, 160, 90, 0.4);
+            border-radius: 50px;
+            color: #fceabb;
+            font-size: 1.1rem;
+            font-family: 'Cormorant Garamond', serif;
+            letter-spacing: 2px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .lock-input:focus {
+            border-color: #dca05a;
+            box-shadow: 0 0 15px rgba(220, 160, 90, 0.3);
+        }
+
+        .lock-icon-input {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #dca05a;
+            font-size: 1rem;
+        }
+
+        .unlock-btn {
+            background: linear-gradient(135deg, #800f2f 0%, #a4133c 50%, #590d22 100%);
+            color: #fceabb;
+            border: 1px solid rgba(220, 160, 90, 0.6);
+            padding: 13px 45px;
+            border-radius: 50px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.05rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(128, 15, 47, 0.5);
+        }
+
+        .unlock-btn:hover {
+            background: linear-gradient(135deg, #a4133c 0%, #c9184a 50%, #800f2f 100%);
+            box-shadow: 0 8px 25px rgba(220, 160, 90, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .lock-footer-text {
+            margin-top: 25px;
+            font-size: 1rem;
+            color: #c0929f;
+            font-style: italic;
+        }
+
+        #error-msg {
+            color: #ff4d6d;
+            font-size: 0.95rem;
+            margin-top: 12px;
+            min-height: 20px;
+            font-style: italic;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .shake {
+            animation: shakeAnim 0.4s ease-in-out;
+        }
+        @keyframes shakeAnim {
+            0%, 100% { transform: translateX(0); }
+            25%, 75% { transform: translateX(-8px); }
+            50% { transform: translateX(8px); }
+        }
+
+
+        /* ================= MAIN UNLOCKED SCENE ================= */
+        #main-scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 40px 20px 30px;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s ease;
+        }
+
+        #main-scene.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Top Header in Main Scene matching image exactly */
+        .main-header {
+            text-align: center;
+            z-index: 20;
+        }
+
+        .main-lotus-top {
+            font-size: 1.8rem;
+            color: #dca05a;
+            margin-bottom: 5px;
+            filter: drop-shadow(0 0 10px rgba(220, 160, 90, 0.7));
+        }
+
+        .main-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 600;
+            letter-spacing: 5px;
+            background: linear-gradient(to right, #fceabb, #fff, #dca05a, #fceabb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(220, 160, 90, 0.5));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .main-heart {
+            color: #ff4d6d;
+            -webkit-text-fill-color: #ff4d6d;
+            font-size: 0.85em;
+            filter: drop-shadow(0 0 10px rgba(255, 77, 109, 0.8));
+            animation: pulseHeart 1.5s infinite ease-in-out;
+        }
+        @keyframes pulseHeart {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.25); }
+        }
+
+        .subtitle-sir {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            color: #fceabb;
+            margin-top: 8px;
+            text-shadow: 0 0 10px rgba(220, 160, 90, 0.4);
+        }
+
+        .divider-ornament {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 6px;
+            color: #dca05a;
+            font-size: 0.9rem;
+        }
+        .divider-line {
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #dca05a);
+        }
+        .divider-line.right {
+            background: linear-gradient(90deg, #dca05a, transparent);
+        }
+
+
+        /* ================= FULL BLOOMING ANIMATED LOTUS (CENTER) ================= */
+        .lotus-center-container {
+            position: relative;
+            width: 380px;
+            height: 320px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin: auto 0;
+        }
+
+        .lotus-glow-bg {
+            position: absolute;
+            bottom: 40px;
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, rgba(255, 117, 143, 0.35) 0%, rgba(220, 160, 90, 0.2) 50%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(15px);
+            animation: glowPulse 4s infinite alternate ease-in-out;
+        }
+        @keyframes glowPulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            100% { transform: scale(1.2); opacity: 1; }
+        }
+
+        .lotus-flower {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            bottom: 20px;
+        }
+
+        /* Lotus Petals structure */
+        .l-petal {
+            position: absolute;
+            bottom: 10px;
+            transform-origin: bottom center;
+            border-radius: 50% 50% 40% 40% / 80% 80% 20% 20%;
+            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.4), 0 -4px 15px rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            transform: rotate(0deg) scaleY(0.2);
+            transition: transform 3s cubic-bezier(0.2, 1, 0.3, 1), opacity 2s ease;
+        }
+
+        /* Petal Layers with realistic glowing gradients */
+        .l-petal.outer {
+            width: 75px;
+            height: 180px;
+            background: linear-gradient(to top, #4a0714 0%, #800f2f 50%, #c9184a 85%, #fceabb 100%);
+            z-index: 2;
+        }
+        .l-petal.middle {
+            width: 68px;
+            height: 165px;
+            background: linear-gradient(to top, #590d22 0%, #a4133c 45%, #ff4d6d 85%, #fff0f3 100%);
+            z-index: 3;
+        }
+        .l-petal.inner {
+            width: 58px;
+            height: 145px;
+            background: linear-gradient(to top, #800f2f 0%, #ff758f 50%, #ffb3c1 85%, #ffffff 100%);
+            z-index: 4;
+        }
+        .l-petal.center-p {
+            width: 48px;
+            height: 125px;
+            background: linear-gradient(to top, #a4133c 0%, #ff8fa3 55%, #ffffff 100%);
+            z-index: 5;
+        }
+
+        .lotus-heart-core {
+            position: absolute;
+            bottom: 25px;
+            width: 45px;
+            height: 45px;
+            background: radial-gradient(circle, #fff7d6, #ffb703, #dca05a);
+            border-radius: 50%;
+            z-index: 6;
+            opacity: 0;
+            box-shadow: 0 0 30px #ffb703, 0 0 60px #fceabb;
+            transition: all 2.5s ease 1.2s;
+        }
+
+        /* Active Blooming Trigger */
+        #main-scene.active .l-petal {
+            opacity: 1;
+        }
+
+        #main-scene.active .lp-center { transform: rotate(0deg) scale(1); transition-delay: 0.4s; }
+        
+        #main-scene.active .lp-i1 { transform: rotate(-15deg) scale(1); transition-delay: 0.7s; }
+        #main-scene.active .lp-i2 { transform: rotate(15deg) scale(1); transition-delay: 0.7s; }
+
+        #main-scene.active .lp-m1 { transform: rotate(-32deg) scale(0.98); transition-delay: 1s; }
+        #main-scene.active .lp-m2 { transform: rotate(32deg) scale(0.98); transition-delay: 1s; }
+        #main-scene.active .lp-m3 { transform: rotate(-50deg) scale(0.95); transition-delay: 1.2s; }
+        #main-scene.active .lp-m4 { transform: rotate(50deg) scale(0.95); transition-delay: 1.2s; }
+
+        #main-scene.active .lp-o1 { transform: rotate(-68deg) scale(0.92); transition-delay: 1.4s; }
+        #main-scene.active .lp-o2 { transform: rotate(68deg) scale(0.92); transition-delay: 1.4s; }
+        #main-scene.active .lp-o3 { transform: rotate(-84deg) scale(0.88); transition-delay: 1.6s; }
+        #main-scene.active .lp-o4 { transform: rotate(84deg) scale(0.88); transition-delay: 1.6s; }
+
+        #main-scene.active .lotus-heart-core {
+            opacity: 1;
+            transform: translateY(-20px) scale(1.15);
+        }
+
+        /* Water Reflection / Ripples */
+        .water-reflection {
+            position: absolute;
+            bottom: 0px;
+            width: 320px;
+            height: 35px;
+            background: radial-gradient(ellipse at center, rgba(255, 117, 143, 0.4) 0%, rgba(128, 15, 47, 0.25) 50%, transparent 80%);
+            border-radius: 50%;
+            z-index: 1;
+            transform: scaleX(0);
+            transition: transform 2s ease 0.8s;
+        }
+        #main-scene.active .water-reflection {
+            transform: scaleX(1);
+        }
+
+
+        /* Bottom Footer matching image */
+        .main-footer {
+            text-align: center;
+            z-index: 20;
+        }
+        .footer-lotus {
+            font-size: 1.2rem;
+            color: #dca05a;
+            margin-bottom: 4px;
+            filter: drop-shadow(0 0 6px rgba(220, 160, 90, 0.6));
+        }
+        .footer-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.15rem;
+            font-style: italic;
+            letter-spacing: 2px;
+            color: #dfb6c2;
+            text-shadow: 0 0 10px rgba(220, 160, 90, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Environment -->
+    <div class="bg-scene"></div>
+    <div class="moon"></div>
+    
+    <!-- Generated Stars -->
+    <div id="stars-container"></div>
+    <!-- Floating Petals -->
+    <div id="petals-container"></div>
+
+    <!-- ================= PASSWORD SCREEN ================= -->
+    <div id="lock-screen">
+        <div class="lock-card card-bottom-corners">
+            <div class="top-lotus-icon">❀</div>
+            <h1 class="lock-title">LUMO ❤️ DEEP</h1>
+            <p class="lock-subtitle">This little world is locked...<br>Enter the password to continue.</p>
+            
+            <div class="password-box-wrapper">
+                <span class="lock-icon-input">🔒</span>
+                <input type="password" id="password-input" class="lock-input" placeholder="Enter Password" autocomplete="off">
+            </div>
+            
+            <button class="unlock-btn" onclick="checkPassword()">UNLOCK ❤️</button>
+            <p id="error-msg">Incorrect password, my love. Try again.</p>
+            
+            <div class="lock-footer-text">Only for you...</div>
+        </div>
+    </div>
+
+    <!-- ================= MAIN SCENE ================= -->
+    <div id="main-scene">
+        <!-- Top Header -->
+        <div class="main-header">
+            <div class="main-lotus-top">❀</div>
+            <h1 class="main-title">
+                LUMO <span class="main-heart">❤️</span> DEEP
+            </h1>
+            <div class="subtitle-sir">I LOVE YOU, SIR</div>
+            <div class="divider-ornament">
+                <div class="divider-line"></div>
+                <span>❖</span>
+                <div class="divider-line right"></div>
+            </div>
+        </div>
+
+        <!-- Blooming Lotus Animation Center -->
+        <div class="lotus-center-container">
+            <div class="lotus-glow-bg"></div>
+            <div class="water-reflection"></div>
+            
+            <div class="lotus-flower">
+                <div class="lotus-heart-core"></div>
+                
+                <!-- Center Core Petal -->
+                <div class="l-petal center-p lp-center"></div>
+
+                <!-- Inner Petals -->
+                <div class="l-petal inner lp-i1"></div>
+                <div class="l-petal inner lp-i2"></div>
+
+                <!-- Middle Petals -->
+                <div class="l-petal middle lp-m1"></div>
+                <div class="l-petal middle lp-m2"></div>
+                <div class="l-petal middle lp-m3"></div>
+                <div class="l-petal middle lp-m4"></div>
+
+                <!-- Outer Petals -->
+                <div class="l-petal outer lp-o1"></div>
+                <div class="l-petal outer lp-o2"></div>
+                <div class="l-petal outer lp-o3"></div>
+                <div class="l-petal outer lp-o4"></div>
+            </div>
+        </div>
+
+        <!-- Bottom Footer -->
+        <div class="main-footer">
+            <div class="footer-lotus">❀</div>
+            <div class="footer-text">Forever & Always</div>
+        </div>
+    </div>
+
+    <script>
+        // Generate Background Stars
+        const starsContainer = document.getElementById('stars-container');
+        for (let i = 0; i < 40; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.width = `${Math.random() * 3 + 1}px`;
+            star.style.height = star.style.width;
+            star.style.top = `${Math.random() * 60}%`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            star.style.animationDelay = `${Math.random() * 3}s`;
+            starsContainer.appendChild(star);
+        }
+
+        // Generate Floating Petals
+        const petalsContainer = document.getElementById('petals-container');
+        for (let i = 0; i < 18; i++) {
+            const petal = document.createElement('div');
+            petal.classList.add('floating-petal');
+            petal.style.width = `${Math.random() * 12 + 10}px`;
+            petal.style.height = `${Math.random() * 22 + 16}px`;
+            petal.style.left = `${Math.random() * 100}%`;
+            petal.style.animationDuration = `${Math.random() * 6 + 6}s`;
+            petal.style.animationDelay = `${Math.random() * 5}s`;
+            petalsContainer.appendChild(petal);
+        }
+
+        // Password Authentication Logic
+        const passwordInput = document.getElementById('password-input');
+        const lockScreen = document.getElementById('lock-screen');
+        const mainScene = document.getElementById('main-scene');
+        const errorMsg = document.getElementById('error-msg');
+        const lockCard = document.querySelector('.lock-card');
+
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        function checkPassword() {
+            const val = passwordInput.value.trim();
+            if (val === 'DEEPMO') {
+                errorMsg.style.opacity = '0';
+                lockScreen.classList.add('hidden');
+                setTimeout(() => {
+                    lockScreen.style.display = 'none';
+                    mainScene.classList.add('active');
+                }, 800);
+            } else {
+                errorMsg.style.opacity = '1';
+                lockCard.classList.remove('shake');
+                void lockCard.offsetWidth;
+                lockCard.classList.add('shake');
+                passwordInput.value = '';
+            }
+        }
+    </script>
+</body>
+</html>
